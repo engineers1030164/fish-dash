@@ -7,8 +7,8 @@
 <style>
   * { margin:0; padding:0; box-sizing:border-box; }
   html, body { background:#001a2e; display:flex; justify-content:center; align-items:center; height:100vh; overflow:hidden; font-family:'Segoe UI',sans-serif; position:fixed; width:100%; touch-action:none; }
-  #gameWrapper { position:relative; }
-  canvas { display:block; border-radius:12px; box-shadow:0 0 40px rgba(0,180,255,0.3); }
+  #gameWrapper { position:relative; width:100%; max-width:520px; aspect-ratio:520/400; }
+  canvas { display:block; border-radius:12px; box-shadow:0 0 40px rgba(0,180,255,0.3); width:100%; height:100%; }
   #ui { position:absolute; top:0; left:0; width:100%; pointer-events:none; }
   #scoreBoard { display:flex; justify-content:space-between; padding:14px 20px; color:#fff; font-size:15px; font-weight:600; text-shadow:0 1px 4px rgba(0,0,0,0.6); }
   .badge { background:rgba(0,0,0,0.35); border-radius:20px; padding:4px 14px; backdrop-filter:blur(4px); }
@@ -26,8 +26,17 @@
   #fullscreenBtn { position:absolute; top:10px; right:10px; background:rgba(0,0,0,0.5); border:1px solid rgba(255,255,255,0.3); border-radius:8px; color:#fff; font-size:18px; padding:6px 10px; cursor:pointer; pointer-events:all; z-index:10; backdrop-filter:blur(4px); transition:background 0.2s; }
   #fullscreenBtn:hover { background:rgba(0,180,255,0.4); }
   #credit { font-size:11px; color:#5a8fa8; margin-top:4px; letter-spacing:1px; }
-  body:fullscreen #gameWrapper, body:-webkit-full-screen #gameWrapper { display:flex; align-items:center; justify-content:center; width:100vw; height:100vh; }
-  body:fullscreen canvas, body:-webkit-full-screen canvas { width:100vw; height:100vh; object-fit:contain; }
+  @media (max-width:540px) {
+    #gameWrapper { max-width:100vw; border-radius:0; }
+    canvas { border-radius:0; }
+    #overlay { border-radius:0; }
+    #overlay h1 { font-size:26px; }
+    #overlay .enemies-legend { gap:6px; }
+    #overlay .enemy-tag { font-size:10px; padding:2px 7px; }
+    #instructions { font-size:10px; }
+  }
+  body:fullscreen #gameWrapper, body:-webkit-full-screen #gameWrapper { max-width:100vw; width:100vw; height:100vh; aspect-ratio:auto; }
+  body:fullscreen canvas, body:-webkit-full-screen canvas { border-radius:0; }
 </style>
 </head>
 <body>
@@ -64,7 +73,6 @@ const canvas = document.getElementById('c');
 const ctx = canvas.getContext('2d');
 const W = 520, H = 400;
 canvas.width = W; canvas.height = H;
-document.getElementById('gameWrapper').style.width = W+'px';
 
 let state='idle', score, level, frame;
 let fishY, fishVY, upHeld, downHeld, boostHeld;
