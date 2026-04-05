@@ -198,6 +198,36 @@ body{background:#0a0e1a;height:100dvh;height:100vh;overflow:hidden;font-family:'
 #bubbleTrophy{font-size:16px;color:#ffd700;font-weight:bold;display:none;text-align:center;padding:6px 14px;background:rgba(255,215,0,0.15);border:1px solid rgba(255,215,0,0.3);border-radius:12px;}
 #bubbleFloat{position:absolute;font-size:20px;font-weight:bold;pointer-events:none;opacity:0;transition:opacity 0.4s,transform 0.6s;text-shadow:0 2px 8px rgba(0,0,0,0.6);}
 
+/* ── FRUIT NINJA GAME ── */
+#page-fruitninja{padding:0;overflow:hidden;display:none;flex-direction:column;}
+#page-fruitninja.active{display:flex;}
+#fnContainer{flex:1;position:relative;overflow:hidden;background:#1a0a2e;touch-action:none;}
+#fnCanvas{display:block;width:100%;height:100%;cursor:crosshair;}
+#fnHud{position:absolute;top:0;left:0;right:0;display:flex;justify-content:space-between;padding:8px 14px;pointer-events:none;}
+#fnHud .fn-chip{background:rgba(0,0,0,0.5);border-radius:16px;padding:4px 12px;color:#fff;font-size:13px;font-weight:700;backdrop-filter:blur(6px);}
+#fnOverlay{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;background:rgba(10,0,30,0.88);color:#fff;gap:10px;padding:24px;}
+#fnOverlay h2{font-size:26px;font-weight:bold;}
+#fnOverlay .fn-sub{font-size:13px;color:#aac;text-align:center;}
+#fnEarned{font-size:22px;color:#ff7043;font-weight:bold;display:none;}
+#fnResult{font-size:13px;color:#80ffcc;display:none;}
+#fnPlayBtn{padding:11px 34px;font-size:16px;font-weight:bold;background:linear-gradient(135deg,#ff7043,#e53935);border:none;border-radius:26px;color:#fff;cursor:pointer;pointer-events:all;box-shadow:0 4px 18px rgba(255,112,67,0.5);}
+
+/* ── BRICK BREAKER GAME ── */
+#page-brickbreaker{padding:0;overflow:hidden;display:none;flex-direction:column;}
+#page-brickbreaker.active{display:flex;}
+#bbContainer{flex:1;position:relative;overflow:hidden;background:#0a0e1a;touch-action:none;}
+#bbCanvas{display:block;width:100%;height:100%;}
+#bbHud{position:absolute;top:0;left:0;right:0;display:flex;justify-content:space-between;padding:8px 14px;pointer-events:none;}
+#bbHud .bb-chip{background:rgba(0,0,0,0.5);border-radius:16px;padding:4px 12px;color:#fff;font-size:13px;font-weight:700;backdrop-filter:blur(6px);}
+#bbOverlay{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;background:rgba(0,5,20,0.88);color:#fff;gap:10px;padding:24px;}
+#bbOverlay h2{font-size:26px;font-weight:bold;}
+#bbOverlay .bb-sub{font-size:13px;color:#aac;text-align:center;}
+.bb-legend{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;margin:4px 0;}
+.bb-tag{font-size:12px;background:rgba(255,255,255,0.08);border-radius:10px;padding:3px 10px;color:#ffe;}
+#bbEarned{font-size:22px;color:#00b4d8;font-weight:bold;display:none;}
+#bbResult{font-size:13px;color:#80ffcc;display:none;}
+#bbPlayBtn{padding:11px 34px;font-size:16px;font-weight:bold;background:linear-gradient(135deg,#00b4d8,#0077b6);border:none;border-radius:26px;color:#fff;cursor:pointer;pointer-events:all;box-shadow:0 4px 18px rgba(0,180,216,0.5);}
+
 /* Leaderboard game tab */
 .lb-game-tabs{display:flex;gap:6px;margin-bottom:10px;}
 .lb-game-tab{flex:1;padding:6px;text-align:center;background:rgba(255,255,255,0.04);border-radius:8px;color:#6a8fa8;font-size:12px;font-weight:600;cursor:pointer;border:none;}
@@ -243,7 +273,8 @@ body{background:#0a0e1a;height:100dvh;height:100vh;overflow:hidden;font-family:'
       <div class="game-card playable" onclick="launchGame('city-stars')"><div class="gc-emoji">⭐</div><div class="gc-name">City Stars</div><div class="gc-status" style="color:#ffd700;">Play</div></div>
       <div class="game-card playable" onclick="launchGame('street-vendor')"><div class="gc-emoji">🍽️</div><div class="gc-name">Restaurant Rush</div><div class="gc-status" style="color:#ff8f00;">Play</div></div>
       <div class="game-card playable" onclick="launchGame('bubble-stack')"><div class="gc-emoji">🔮</div><div class="gc-name">Bubble Stack</div><div class="gc-status" style="color:#c471ed;">Play</div></div>
-      <div class="game-card locked"><div class="gc-emoji">🦀</div><div class="gc-name">Crab Clash</div><div class="gc-status">Coming Soon</div></div>
+      <div class="game-card playable" onclick="launchGame('fruit-ninja')"><div class="gc-emoji">🍉</div><div class="gc-name">Fruit Ninja</div><div class="gc-status" style="color:#ff7043;">Play</div></div>
+      <div class="game-card playable" onclick="launchGame('brick-breaker')"><div class="gc-emoji">🧱</div><div class="gc-name">Brick Breaker</div><div class="gc-status" style="color:#00b4d8;">Play</div></div>
     </div>
   </div>
 
@@ -449,6 +480,60 @@ body{background:#0a0e1a;height:100dvh;height:100vh;overflow:hidden;font-family:'
     </div>
   </div>
 
+  <!-- ══════ FRUIT NINJA GAME ══════ -->
+  <div id="page-fruitninja" class="page">
+    <div class="game-topbar">
+      <button class="back-btn" onclick="exitFruitNinja()">←</button>
+      <span class="game-title">🍉 Fruit Ninja</span>
+      <button class="fullscreen-btn" onclick="toggleFullscreen()">⛶</button>
+    </div>
+    <div id="fnContainer">
+      <canvas id="fnCanvas"></canvas>
+      <div id="fnHud">
+        <div class="fn-chip">🍉 <span id="fnScore">0</span></div>
+        <div class="fn-chip" id="fnLives">❤️❤️❤️</div>
+      </div>
+      <div id="fnOverlay">
+        <h2>🍉 Fruit Ninja</h2>
+        <div class="fn-sub">Swipe across fruits to slash them!<br>Avoid 💣 bombs or lose a life!</div>
+        <div id="fnEarned"></div>
+        <div id="fnResult"></div>
+        <button id="fnPlayBtn">▶ Play</button>
+        <div style="font-size:11px;color:#7fb3d0;margin-top:4px;">Swipe / drag to slice &nbsp;|&nbsp; 3x combo = bonus!</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════ BRICK BREAKER GAME ══════ -->
+  <div id="page-brickbreaker" class="page">
+    <div class="game-topbar">
+      <button class="back-btn" onclick="exitBrickBreaker()">←</button>
+      <span class="game-title">🧱 Brick Breaker</span>
+      <button class="fullscreen-btn" onclick="toggleFullscreen()">⛶</button>
+    </div>
+    <div id="bbContainer">
+      <canvas id="bbCanvas"></canvas>
+      <div id="bbHud">
+        <div class="bb-chip">🏆 <span id="bbScore">0</span></div>
+        <div class="bb-chip" id="bbLevel">Lv 1</div>
+        <div class="bb-chip" id="bbLives">❤️❤️❤️</div>
+      </div>
+      <div id="bbOverlay">
+        <h2>🧱 Brick Breaker</h2>
+        <div class="bb-sub">Break all bricks to advance levels!</div>
+        <div class="bb-legend">
+          <span class="bb-tag">⬛ Wide Paddle</span>
+          <span class="bb-tag">⚡ Multi Ball</span>
+          <span class="bb-tag">🐢 Slow Ball</span>
+        </div>
+        <div id="bbEarned"></div>
+        <div id="bbResult"></div>
+        <button id="bbPlayBtn">▶ Play</button>
+        <div style="font-size:11px;color:#7fb3d0;margin-top:4px;">Move mouse / drag to control paddle</div>
+      </div>
+    </div>
+  </div>
+
   <!-- ══════ BOTTOM NAV ══════ -->
   <div id="bottomNav">
     <div class="nav-item active" onclick="navigate('home')"><div class="nav-icon">🏠</div>Home</div>
@@ -463,5 +548,7 @@ body{background:#0a0e1a;height:100dvh;height:100vh;overflow:hidden;font-family:'
 <script src="js/city-stars.js"></script>
 <script src="js/restaurant-rush.js"></script>
 <script src="js/bubble-stack.js"></script>
+<script src="js/fruit-ninja.js"></script>
+<script src="js/brick-breaker.js"></script>
 </body>
 </html>

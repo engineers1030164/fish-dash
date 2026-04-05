@@ -37,6 +37,14 @@ function launchGame(id){
     document.getElementById('page-bubble').classList.add('active');
     currentPage='bubble';
     showBubbleOverlay(false);
+  } else if(id==='fruit-ninja'){
+    document.getElementById('page-fruitninja').classList.add('active');
+    currentPage='fruitninja';
+    showFnOverlay(false);
+  } else if(id==='brick-breaker'){
+    document.getElementById('page-brickbreaker').classList.add('active');
+    currentPage='brickbreaker';
+    showBbOverlay(false);
   }
 }
 
@@ -229,7 +237,7 @@ function toggleFullscreen(){
 }
 
 // Prevent mobile scroll
-document.addEventListener('touchmove',e=>{if(currentPage==='game'||currentPage==='city'||currentPage==='vendor'||currentPage==='bubble')e.preventDefault();},{passive:false});
+document.addEventListener('touchmove',e=>{if(currentPage==='game'||currentPage==='city'||currentPage==='vendor'||currentPage==='bubble'||currentPage==='fruitninja'||currentPage==='brickbreaker')e.preventDefault();},{passive:false});
 
 // Handle rotation / resize
 window.addEventListener('resize',()=>{
