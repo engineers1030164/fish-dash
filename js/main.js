@@ -246,6 +246,25 @@ window.addEventListener('resize',()=>{
 });
 window.dispatchEvent(new Event('resize'));
 
+// Auto fullscreen on landscape rotation (game pages)
+const rGamePages=['game','city','vendor','bubble','fruitninja','brickbreaker'];
+function tryFullscreen(){
+  const el=document.documentElement;
+  if(document.fullscreenElement||document.webkitFullscreenElement)return;
+  const fn=el.requestFullscreen||el.webkitRequestFullscreen;
+  if(fn)fn.call(el).catch(()=>{});
+}
+window.matchMedia('(orientation: landscape)').addEventListener('change',e=>{
+  if(e.matches&&rGamePages.includes(currentPage)) tryFullscreen();
+});
+// Resize canvas when entering/exiting fullscreen
+document.addEventListener('fullscreenchange',()=>{
+  setTimeout(()=>window.dispatchEvent(new Event('resize')),120);
+});
+document.addEventListener('webkitfullscreenchange',()=>{
+  setTimeout(()=>window.dispatchEvent(new Event('resize')),120);
+});
+
 // Init
 refreshHome();
 updateAchievements(loadStats());
