@@ -1,0 +1,11 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "siddh-arcade",
+      "runtimeExecutable": "python",
+      "runtimeArgs": ["-m", "http.server", "5500", "--directory", "D:\\SIDDH_GAME"],
+      "port": 5500
+    }
+  ]
+}

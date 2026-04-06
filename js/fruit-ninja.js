@@ -17,14 +17,14 @@ let fnIsSlicing = false;
 let fnLastSliceX = 0, fnLastSliceY = 0;
 
 const FN_FRUITS = [
-  { emoji: '🍉', color: '#e53935', juice: '#ff8f00', pts: 10, r: 28 },
-  { emoji: '🍊', color: '#ff7043', juice: '#ffd600', pts: 10, r: 24 },
-  { emoji: '🍋', color: '#fdd835', juice: '#fff176', pts: 10, r: 22 },
-  { emoji: '🍇', color: '#7b1fa2', juice: '#ce93d8', pts: 15, r: 22 },
-  { emoji: '🍓', color: '#e53935', juice: '#ff8f00', pts: 15, r: 20 },
-  { emoji: '🍍', color: '#f9a825', juice: '#fff176', pts: 20, r: 26 },
-  { emoji: '🥭', color: '#ff8f00', juice: '#ffd54f', pts: 20, r: 25 },
-  { emoji: '🍎', color: '#c62828', juice: '#ef9a9a', pts: 15, r: 23 },
+  { emoji: '🍉', color: '#4caf50', juice: '#ff1744', pts: 10, r: 28 },  // green rind, red juice
+  { emoji: '🍊', color: '#ff9800', juice: '#ffb74d', pts: 10, r: 24 },  // orange
+  { emoji: '🍋', color: '#ffeb3b', juice: '#fff59d', pts: 10, r: 22 },  // yellow
+  { emoji: '🍇', color: '#9c27b0', juice: '#ce93d8', pts: 15, r: 22 },  // purple
+  { emoji: '🍓', color: '#f44336', juice: '#ff8a80', pts: 15, r: 20 },  // red
+  { emoji: '🍍', color: '#ffc107', juice: '#fff9c4', pts: 20, r: 26 },  // golden yellow
+  { emoji: '🥭', color: '#ff9800', juice: '#ffe082', pts: 20, r: 25 },  // orange-yellow
+  { emoji: '🍎', color: '#f44336', juice: '#ffcdd2', pts: 15, r: 23 },  // red, pink juice
 ];
 
 function fnResize() {
@@ -77,8 +77,8 @@ function fnSpawnFruit() {
     vx, vy,
     r: isBomb ? 22 : def.r,
     emoji: isBomb ? '💣' : def.emoji,
-    color: isBomb ? '#333' : def.color,
-    juice: isBomb ? '#ff0000' : def.juice,
+    color: isBomb ? '#2e7d32' : def.color,
+    juice: isBomb ? '#4caf50' : def.juice,
     pts: isBomb ? 0 : def.pts,
     isBomb,
     sliced: false,
@@ -107,8 +107,8 @@ function fnSliceFruit(fruit, sx, sy, ex, ey) {
       fnLives--;
       document.getElementById('fnLives').textContent = '❤️'.repeat(Math.max(0, fnLives));
       fnCombo = 0;
-      fnSpawnParticles(fruit.x, fruit.y, '#ff0000', 20);
-      fnAddFloat('💥 BOOM!', '#ff4444', fruit.x, fruit.y);
+      fnSpawnParticles(fruit.x, fruit.y, '#4caf50', 20);
+      fnAddFloat('💥 BOOM!', '#43a047', fruit.x, fruit.y);
       if (fnLives <= 0) { setTimeout(() => fnEndGame(), 400); }
     } else {
       fnCombo++;
@@ -272,7 +272,7 @@ function fnRender() {
       fnCtx.textBaseline = 'middle';
       // glow for bombs
       if (f.isBomb) {
-        fnCtx.shadowColor = '#ff4400';
+        fnCtx.shadowColor = '#43a047';
         fnCtx.shadowBlur = 12 + Math.sin(fnFrame * 0.15) * 6;
       }
       fnCtx.fillText(f.emoji, 0, 0);
