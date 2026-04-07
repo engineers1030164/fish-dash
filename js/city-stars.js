@@ -25,7 +25,8 @@ function cityResize(){
   CW=Math.max(280,cont.clientWidth||520);
   CH=Math.max(300,cont.clientHeight||380);
   cc.width=CW; cc.height=CH;
-  TW=Math.max(28,Math.floor(CW/7));
+  // Scale tiles to fill canvas: grid spans 6*TW wide, 3*TW tall
+  TW=Math.max(28,Math.floor(Math.min(CW/6, (CH-60)/3.2)));
   TH=Math.floor(TW/2);
   FLOOR_HEIGHT=TH*2;
 }
@@ -80,7 +81,10 @@ let cityRushMode=false;
 // ══════════════════════════════════════════════════════════════════════════
 // Isometric Math (uses dynamic TW/TH)
 // ══════════════════════════════════════════════════════════════════════════
-function isoOrigin(){return{x:CW/2,y:Math.round(CH*0.22)};}
+function isoOrigin(){
+  // Center grid vertically: grid goes from originY down to originY+3*TW
+  return{x:CW/2, y:Math.round(Math.max(TW*0.5+10, (CH-3*TW)/2))};
+}
 function toScreen(tx,ty){
   const o=isoOrigin();
   return{x:o.x+(tx-ty)*(TW/2), y:o.y+(tx+ty)*(TH/2)};
