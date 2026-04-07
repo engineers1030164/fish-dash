@@ -1,0 +1,21 @@
+{
+  "name": "Gamer - Siddh's Arcade",
+  "short_name": "Gamer",
+  "description": "7 awesome games in one app — Fish Dash, Fruit Ninja, Urban Hunt & more!",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#0f0f1a",
+  "theme_color": "#00b4d8",
+  "icons": [
+    {
+      "src": "icons/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["games", "entertainment"],
+  "screenshots": []
+}
