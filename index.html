@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>Siddh's Arcade</title>
+<title>Gamer</title>
 <style>
 *{margin:0;padding:0;box-sizing:border-box;}
 html{height:100%;overflow:hidden;}
@@ -29,29 +29,72 @@ body{background:#0a0e1a;height:100dvh;height:100vh;overflow:hidden;font-family:'
 .page-header h1{font-size:22px;color:#fff;letter-spacing:1px;}
 .page-header .subtitle{font-size:11px;color:#5a8fa8;margin-top:2px;}
 
-/* ── HOME ── */
+/* ── GAMER APP STORE ── */
+.store-topbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;}
+.store-brand{display:flex;align-items:center;gap:8px;}
+.store-logo{width:34px;height:34px;border-radius:10px;background:linear-gradient(135deg,#00b4d8,#7b2ff7);display:flex;align-items:center;justify-content:center;font-size:18px;}
+.store-name{font-size:22px;font-weight:800;color:#fff;letter-spacing:0.5px;}
+.store-name span{color:#00b4d8;}
+.store-avatar{width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,#00b4d8,#0077b6);display:flex;align-items:center;justify-content:center;font-size:16px;cursor:pointer;}
+
+.store-search{display:flex;align-items:center;gap:8px;background:rgba(255,255,255,0.07);border-radius:12px;padding:9px 14px;margin-bottom:14px;border:1px solid rgba(255,255,255,0.08);}
+.store-search .si{font-size:14px;color:#6a8fa8;}
+.store-search input{background:none;border:none;outline:none;color:#fff;font-size:13px;flex:1;font-family:inherit;}
+.store-search input::placeholder{color:#4a6a80;}
+
+.store-cats{display:flex;gap:8px;margin-bottom:16px;overflow-x:auto;padding-bottom:2px;}
+.store-cats::-webkit-scrollbar{display:none;}
+.cat-btn{padding:6px 16px;border-radius:20px;border:none;font-size:12px;font-weight:600;cursor:pointer;white-space:nowrap;-webkit-tap-highlight-color:transparent;transition:background 0.15s,color 0.15s;}
+.cat-btn.active{background:#00b4d8;color:#000;}
+.cat-btn:not(.active){background:rgba(255,255,255,0.08);color:#7fb3d0;}
+
+/* Featured banner */
+.store-featured{position:relative;border-radius:18px;overflow:hidden;margin-bottom:18px;cursor:pointer;-webkit-tap-highlight-color:transparent;}
+.sf-inner{padding:20px;background:linear-gradient(135deg,#0d2137 0%,#102a42 60%,#0d1f30 100%);display:flex;align-items:center;gap:16px;}
+.sf-icon{font-size:54px;filter:drop-shadow(0 4px 12px rgba(0,0,0,0.5));flex-shrink:0;}
+.sf-info{flex:1;}
+.sf-badge{font-size:9px;font-weight:700;letter-spacing:1.5px;color:#00b4d8;text-transform:uppercase;margin-bottom:4px;}
+.sf-title{font-size:19px;font-weight:800;color:#fff;line-height:1.2;}
+.sf-desc{font-size:11px;color:#7fb3d0;margin:4px 0 8px;}
+.sf-meta{display:flex;align-items:center;gap:8px;}
+.sf-stars{color:#ffd700;font-size:11px;}
+.sf-genre{font-size:10px;background:rgba(0,180,216,0.18);color:#00b4d8;padding:2px 8px;border-radius:8px;font-weight:600;}
+.sf-play{padding:8px 22px;font-size:13px;font-weight:700;background:linear-gradient(135deg,#00b4d8,#0077b6);border:none;border-radius:20px;color:#fff;cursor:pointer;box-shadow:0 4px 14px rgba(0,180,255,0.35);}
+.sf-glow{position:absolute;top:-40px;right:-20px;width:130px;height:130px;background:radial-gradient(circle,rgba(0,180,255,0.12),transparent 70%);border-radius:50%;pointer-events:none;}
+
+/* Section header */
+.section-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;}
+.section-title{font-size:14px;color:#8aa;font-weight:700;text-transform:uppercase;letter-spacing:1px;}
+.section-see-all{font-size:11px;color:#00b4d8;cursor:pointer;}
+
+/* App store cards (horizontal list) */
+.app-row{display:flex;flex-direction:column;gap:2px;margin-bottom:4px;}
+.app-card{display:flex;align-items:center;gap:12px;padding:10px 4px;border-radius:12px;cursor:pointer;-webkit-tap-highlight-color:transparent;transition:background 0.12s;}
+.app-card:active{background:rgba(255,255,255,0.05);}
+.app-icon{width:56px;height:56px;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:28px;flex-shrink:0;position:relative;}
+.app-icon-inner{width:100%;height:100%;border-radius:14px;display:flex;align-items:center;justify-content:center;}
+.app-info{flex:1;min-width:0;}
+.app-name{font-size:14px;font-weight:700;color:#fff;margin-bottom:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.app-genre{font-size:10px;color:#6a8fa8;margin-bottom:4px;}
+.app-rating{display:flex;align-items:center;gap:4px;}
+.app-stars{color:#ffd700;font-size:10px;letter-spacing:0px;}
+.app-dl{font-size:9px;color:#4a6a80;}
+.app-action{flex-shrink:0;}
+.app-play-btn{padding:7px 16px;border-radius:18px;border:1.5px solid rgba(0,180,216,0.5);background:rgba(0,180,216,0.1);color:#00b4d8;font-size:12px;font-weight:700;cursor:pointer;-webkit-tap-highlight-color:transparent;transition:background 0.12s;}
+.app-play-btn:active{background:rgba(0,180,216,0.25);}
+.app-divider{height:1px;background:rgba(255,255,255,0.05);margin-left:68px;}
+
+/* Stats strip */
 .stats-bar{display:flex;gap:8px;margin-bottom:16px;}
 .stat-chip{flex:1;background:rgba(255,255,255,0.06);border-radius:12px;padding:10px 8px;text-align:center;}
 .stat-chip .stat-val{font-size:18px;font-weight:bold;color:#fff;}
 .stat-chip .stat-lbl{font-size:9px;color:#6a8fa8;margin-top:2px;text-transform:uppercase;letter-spacing:0.5px;}
 
-.featured-card{background:linear-gradient(135deg,#003d6b,#00264d);border-radius:16px;padding:20px;margin-bottom:16px;position:relative;overflow:hidden;cursor:pointer;-webkit-tap-highlight-color:transparent;}
-.featured-card::before{content:'';position:absolute;top:-30px;right:-30px;width:120px;height:120px;background:radial-gradient(circle,rgba(0,180,255,0.15),transparent);border-radius:50%;}
-.featured-card .fc-emoji{font-size:40px;}
-.featured-card .fc-title{font-size:20px;color:#fff;font-weight:bold;margin:6px 0 2px;}
-.featured-card .fc-desc{font-size:12px;color:#7fb3d0;}
-.featured-play{margin-top:12px;padding:10px 28px;font-size:15px;font-weight:bold;background:linear-gradient(135deg,#00b4d8,#0077b6);border:none;border-radius:24px;color:#fff;cursor:pointer;box-shadow:0 4px 16px rgba(0,180,255,0.4);}
-
-.section-title{font-size:14px;color:#8aa;font-weight:600;margin-bottom:10px;text-transform:uppercase;letter-spacing:1px;}
-.games-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;}
-.game-card{background:rgba(255,255,255,0.05);border-radius:14px;padding:16px;text-align:center;cursor:pointer;transition:transform 0.15s;position:relative;-webkit-tap-highlight-color:transparent;}
-.game-card:active{transform:scale(0.96);}
-.game-card .gc-emoji{font-size:32px;}
-.game-card .gc-name{font-size:13px;color:#fff;font-weight:600;margin-top:6px;}
-.game-card .gc-status{font-size:10px;margin-top:4px;color:#5a8fa8;}
-.game-card.locked{opacity:0.5;}
-.game-card.locked::after{content:'🔒';position:absolute;top:8px;right:8px;font-size:14px;}
-.game-card.playable{border:1px solid rgba(0,180,255,0.25);}
+/* keep old classes in case referenced elsewhere */
+.games-grid{display:none;}
+.game-card{display:none;}
+.featured-card{display:none;}
+.featured-play{display:none;}
 
 /* ── GAME SCREEN ── */
 .game-topbar{display:flex;align-items:center;padding:10px 14px;background:rgba(0,10,30,0.9);gap:10px;}
@@ -270,46 +313,155 @@ body{background:#0a0e1a;height:100dvh;height:100vh;overflow:hidden;font-family:'
 <body>
 <div id="app">
 
-  <!-- ══════ HOME ══════ -->
+  <!-- ══════ HOME — GAMER APP STORE ══════ -->
   <div id="page-home" class="page active">
-    <div class="page-header">
-      <div>
-        <h1>Siddh's Arcade</h1>
-        <div class="subtitle">Welcome back, Siddh!</div>
+
+    <!-- Top bar -->
+    <div class="store-topbar">
+      <div class="store-brand">
+        <div class="store-logo">🎮</div>
+        <div class="store-name">G<span>amer</span></div>
       </div>
+      <div class="store-avatar" onclick="navigate('profile')">S</div>
     </div>
+
+    <!-- Search -->
+    <div class="store-search">
+      <span class="si">🔍</span>
+      <input type="text" placeholder="Search games…" readonly onclick="this.blur()">
+    </div>
+
+    <!-- Category tabs -->
+    <div class="store-cats">
+      <button class="cat-btn active">All</button>
+      <button class="cat-btn">Action</button>
+      <button class="cat-btn">Arcade</button>
+      <button class="cat-btn">Shooter</button>
+      <button class="cat-btn">Casual</button>
+      <button class="cat-btn">Strategy</button>
+    </div>
+
+    <!-- Featured -->
+    <div class="store-featured" onclick="launchGame('urban-hunt')">
+      <div class="sf-inner">
+        <div class="sf-icon">🔫</div>
+        <div class="sf-info">
+          <div class="sf-badge">⭐ Featured</div>
+          <div class="sf-title">Urban Hunt 3D</div>
+          <div class="sf-desc">First-person city shooter with AI enemies</div>
+          <div class="sf-meta">
+            <span class="sf-stars">★★★★★</span>
+            <span class="sf-genre">Shooter</span>
+            <button class="sf-play" onclick="event.stopPropagation();launchGame('urban-hunt')">▶ Play</button>
+          </div>
+        </div>
+      </div>
+      <div class="sf-glow"></div>
+    </div>
+
+    <!-- Stats strip -->
     <div class="stats-bar">
       <div class="stat-chip"><div class="stat-val" id="homeScore">0</div><div class="stat-lbl">Best Score</div></div>
       <div class="stat-chip"><div class="stat-val" id="homeLevel">1</div><div class="stat-lbl">Best Level</div></div>
       <div class="stat-chip"><div class="stat-val" id="homeGames">0</div><div class="stat-lbl">Games</div></div>
     </div>
 
-    <div class="featured-card" onclick="launchGame('fish-dash')">
-      <div class="fc-emoji">🐟</div>
-      <div class="fc-title">Fish Dash</div>
-      <div class="fc-desc">Dodge pillars & deadly sea creatures!</div>
-      <button class="featured-play">▶ Play Now</button>
+    <!-- All Games -->
+    <div class="section-hdr">
+      <div class="section-title">All Games</div>
+      <div class="section-see-all">7 games</div>
     </div>
 
-    <div class="section-title">All Games</div>
-    <div class="games-grid">
-      <div class="game-card playable" onclick="launchGame('fish-dash')">
-        <div class="gc-emoji">🐟</div>
-        <div class="gc-name">Fish Dash</div>
-        <div class="gc-status" style="color:#00b4d8;">Play</div>
+    <div class="app-row">
+      <!-- Fish Dash -->
+      <div class="app-card" onclick="launchGame('fish-dash')">
+        <div class="app-icon" style="background:linear-gradient(135deg,#001a3a,#003d6b)"><div class="app-icon-inner">🐟</div></div>
+        <div class="app-info">
+          <div class="app-name">Fish Dash</div>
+          <div class="app-genre">Arcade</div>
+          <div class="app-rating"><span class="app-stars">★★★★½</span><span class="app-dl">· 10K+ plays</span></div>
+        </div>
+        <div class="app-action"><button class="app-play-btn" onclick="event.stopPropagation();launchGame('fish-dash')">▶ Play</button></div>
       </div>
-      <div class="game-card playable" onclick="launchGame('city-stars')"><div class="gc-emoji">⭐</div><div class="gc-name">City Stars</div><div class="gc-status" style="color:#ffd700;">Play</div></div>
-      <div class="game-card playable" onclick="launchGame('street-vendor')"><div class="gc-emoji">🍽️</div><div class="gc-name">Restaurant Rush</div><div class="gc-status" style="color:#ff8f00;">Play</div></div>
-      <div class="game-card playable" onclick="launchGame('bubble-stack')"><div class="gc-emoji">🔮</div><div class="gc-name">Bubble Stack</div><div class="gc-status" style="color:#c471ed;">Play</div></div>
-      <div class="game-card playable" onclick="launchGame('fruit-ninja')"><div class="gc-emoji">🍉</div><div class="gc-name">Fruit Ninja</div><div class="gc-status" style="color:#ff7043;">Play</div></div>
-      <div class="game-card playable" onclick="launchGame('brick-breaker')"><div class="gc-emoji">🧱</div><div class="gc-name">Brick Breaker</div><div class="gc-status" style="color:#00b4d8;">Play</div></div>
-      <div class="game-card playable" onclick="launchGame('urban-hunt')"><div class="gc-emoji">🔫</div><div class="gc-name">Urban Hunt</div><div class="gc-status" style="color:#ff5252;">Play</div></div>
+      <div class="app-divider"></div>
+
+      <!-- City Stars -->
+      <div class="app-card" onclick="launchGame('city-stars')">
+        <div class="app-icon" style="background:linear-gradient(135deg,#1a1200,#3d2e00)"><div class="app-icon-inner">⭐</div></div>
+        <div class="app-info">
+          <div class="app-name">City Stars</div>
+          <div class="app-genre">Action</div>
+          <div class="app-rating"><span class="app-stars">★★★★</span><span class="app-dl">· 8K+ plays</span></div>
+        </div>
+        <div class="app-action"><button class="app-play-btn" onclick="event.stopPropagation();launchGame('city-stars')">▶ Play</button></div>
+      </div>
+      <div class="app-divider"></div>
+
+      <!-- Restaurant Rush -->
+      <div class="app-card" onclick="launchGame('street-vendor')">
+        <div class="app-icon" style="background:linear-gradient(135deg,#1a0800,#3d1500)"><div class="app-icon-inner">🍽️</div></div>
+        <div class="app-info">
+          <div class="app-name">Restaurant Rush</div>
+          <div class="app-genre">Simulation</div>
+          <div class="app-rating"><span class="app-stars">★★★★</span><span class="app-dl">· 7K+ plays</span></div>
+        </div>
+        <div class="app-action"><button class="app-play-btn" onclick="event.stopPropagation();launchGame('street-vendor')">▶ Play</button></div>
+      </div>
+      <div class="app-divider"></div>
+
+      <!-- Bubble Stack -->
+      <div class="app-card" onclick="launchGame('bubble-stack')">
+        <div class="app-icon" style="background:linear-gradient(135deg,#0d0020,#1a003d)"><div class="app-icon-inner">🔮</div></div>
+        <div class="app-info">
+          <div class="app-name">Bubble Stack</div>
+          <div class="app-genre">Casual</div>
+          <div class="app-rating"><span class="app-stars">★★★★½</span><span class="app-dl">· 9K+ plays</span></div>
+        </div>
+        <div class="app-action"><button class="app-play-btn" onclick="event.stopPropagation();launchGame('bubble-stack')">▶ Play</button></div>
+      </div>
+      <div class="app-divider"></div>
+
+      <!-- Fruit Ninja -->
+      <div class="app-card" onclick="launchGame('fruit-ninja')">
+        <div class="app-icon" style="background:linear-gradient(135deg,#1a0800,#3d1200)"><div class="app-icon-inner">🍉</div></div>
+        <div class="app-info">
+          <div class="app-name">Fruit Ninja</div>
+          <div class="app-genre">Action</div>
+          <div class="app-rating"><span class="app-stars">★★★★★</span><span class="app-dl">· 15K+ plays</span></div>
+        </div>
+        <div class="app-action"><button class="app-play-btn" onclick="event.stopPropagation();launchGame('fruit-ninja')">▶ Play</button></div>
+      </div>
+      <div class="app-divider"></div>
+
+      <!-- Brick Breaker -->
+      <div class="app-card" onclick="launchGame('brick-breaker')">
+        <div class="app-icon" style="background:linear-gradient(135deg,#001020,#002040)"><div class="app-icon-inner">🧱</div></div>
+        <div class="app-info">
+          <div class="app-name">Brick Breaker</div>
+          <div class="app-genre">Arcade</div>
+          <div class="app-rating"><span class="app-stars">★★★★★</span><span class="app-dl">· 20K+ plays</span></div>
+        </div>
+        <div class="app-action"><button class="app-play-btn" onclick="event.stopPropagation();launchGame('brick-breaker')">▶ Play</button></div>
+      </div>
+      <div class="app-divider"></div>
+
+      <!-- Urban Hunt -->
+      <div class="app-card" onclick="launchGame('urban-hunt')">
+        <div class="app-icon" style="background:linear-gradient(135deg,#1a0000,#3d0808)"><div class="app-icon-inner">🔫</div></div>
+        <div class="app-info">
+          <div class="app-name">Urban Hunt 3D</div>
+          <div class="app-genre">Shooter</div>
+          <div class="app-rating"><span class="app-stars">★★★★★</span><span class="app-dl">· 5K+ plays</span></div>
+        </div>
+        <div class="app-action"><button class="app-play-btn" onclick="event.stopPropagation();launchGame('urban-hunt')">▶ Play</button></div>
+      </div>
     </div>
+
   </div>
 
   <!-- ══════ LEADERBOARD ══════ -->
   <div id="page-leaderboard" class="page">
-    <div class="page-header"><h1>Leaderboard</h1></div>
+    <div class="page-header"><h1>🏆 Leaderboard</h1></div>
     <div class="lb-game-tabs">
       <button class="lb-game-tab active" onclick="switchLbGame(this,'fish-dash')">🐟 Fish Dash</button>
       <button class="lb-game-tab" onclick="switchLbGame(this,'city-stars')">⭐ City Stars</button>
@@ -351,7 +503,7 @@ body{background:#0a0e1a;height:100dvh;height:100vh;overflow:hidden;font-family:'
 
   <!-- ══════ SETTINGS ══════ -->
   <div id="page-settings" class="page">
-    <div class="page-header"><h1>Settings</h1></div>
+    <div class="page-header"><h1>⚙️ Settings</h1></div>
     <div class="setting-group">
       <div class="setting-group-title">Audio</div>
       <div class="setting-row"><div class="setting-label"><span class="s-icon">🔊</span>Sound Effects</div><div class="toggle on" data-key="sound" onclick="toggleSetting(this)"></div></div>
@@ -598,7 +750,7 @@ body{background:#0a0e1a;height:100dvh;height:100vh;overflow:hidden;font-family:'
 
   <!-- ══════ BOTTOM NAV ══════ -->
   <div id="bottomNav">
-    <div class="nav-item active" onclick="navigate('home')"><div class="nav-icon">🏠</div>Home</div>
+    <div class="nav-item active" onclick="navigate('home')"><div class="nav-icon">🏪</div>Store</div>
     <div class="nav-item" onclick="navigate('leaderboard')"><div class="nav-icon">🏆</div>Ranks</div>
     <div class="nav-item" onclick="navigate('profile')"><div class="nav-icon">👤</div>Profile</div>
     <div class="nav-item" onclick="navigate('settings')"><div class="nav-icon">⚙️</div>Settings</div>
