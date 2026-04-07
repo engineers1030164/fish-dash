@@ -538,8 +538,11 @@ function renderHUD(){
 }
 
 // ── Game loop ──────────────────────────────────────────────────────────────
-function uhLoop(){
+let _uhLastTs=0;
+function uhLoop(ts=0){
   if(!uhRunning){uhAnimId=null;return;}
+  if(_uhLastTs&&ts-_uhLastTs<14){uhAnimId=requestAnimationFrame(uhLoop);return;}
+  _uhLastTs=ts;
   uhUpdate();
   const zBuf=uhRayCast();
   renderSprites(zBuf);

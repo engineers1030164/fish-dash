@@ -796,8 +796,11 @@ function rRender(){
 }
 
 // ── Game loop ──
-function rLoop(){
+let _rLastTs=0;
+function rLoop(ts=0){
   if(rState!=='playing')return;
+  if(_rLastTs&&ts-_rLastTs<14){rRaf=requestAnimationFrame(rLoop);return;}
+  _rLastTs=ts;
   rFrame++;
   rSpawnTimer--;
   const interval=Math.max(150,320-rLevel*22);

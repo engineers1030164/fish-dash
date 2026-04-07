@@ -1,30 +1,40 @@
 // ══════════════════════════════════════════════════════════════════════════
-// FRUIT NINJA — Swipe to slash fruits, avoid bombs
+// FRUIT NINJA — Slice falling fruits, never-ending, power-ups
 // ══════════════════════════════════════════════════════════════════════════
 
 let fnCanvas, fnCtx, fnW, fnH;
-let fnState = 'idle'; // idle | playing | ended
+let fnState = 'idle';
 let fnRaf = null;
-let fnScore = 0, fnLives = 3, fnCombo = 0, fnComboTimer = 0;
+let fnLastTs = 0;
+let fnScore = 0, fnCombo = 0, fnComboTimer = 0, fnBestCombo = 0;
 let fnFruits = [];
-let fnSliceTrail = []; // [{x,y,t}] mouse/touch trail
+let fnSliceTrail = [];
 let fnParticles = [];
 let fnFloats = [];
 let fnFrame = 0;
-let fnSpawnTimer = 0, fnSpawnInterval = 55;
+let fnSpawnTimer = 0, fnSpawnInterval = 90;
 let fnDifficulty = 0;
 let fnIsSlicing = false;
-let fnLastSliceX = 0, fnLastSliceY = 0;
+// Power-up state
+let fnFireTimer = 0;   // fire 3x multiplier (frames)
+let fnIceTimer = 0;    // slow-mo (frames)
 
 const FN_FRUITS = [
-  { emoji: '🍉', color: '#4caf50', juice: '#ff1744', pts: 10, r: 28 },  // green rind, red juice
-  { emoji: '🍊', color: '#ff9800', juice: '#ffb74d', pts: 10, r: 24 },  // orange
-  { emoji: '🍋', color: '#ffeb3b', juice: '#fff59d', pts: 10, r: 22 },  // yellow
-  { emoji: '🍇', color: '#9c27b0', juice: '#ce93d8', pts: 15, r: 22 },  // purple
-  { emoji: '🍓', color: '#f44336', juice: '#ff8a80', pts: 15, r: 20 },  // red
-  { emoji: '🍍', color: '#ffc107', juice: '#fff9c4', pts: 20, r: 26 },  // golden yellow
-  { emoji: '🥭', color: '#ff9800', juice: '#ffe082', pts: 20, r: 25 },  // orange-yellow
-  { emoji: '🍎', color: '#f44336', juice: '#ffcdd2', pts: 15, r: 23 },  // red, pink juice
+  { emoji: '🍉', color: '#4caf50', juice: '#ff1744', pts: 10, r: 40 },
+  { emoji: '🍊', color: '#ff9800', juice: '#ffb74d', pts: 10, r: 36 },
+  { emoji: '🍋', color: '#ffeb3b', juice: '#fff59d', pts: 10, r: 34 },
+  { emoji: '🍇', color: '#9c27b0', juice: '#ce93d8', pts: 15, r: 34 },
+  { emoji: '🍓', color: '#f44336', juice: '#ff8a80', pts: 15, r: 32 },
+  { emoji: '🍍', color: '#ffc107', juice: '#fff9c4', pts: 20, r: 38 },
+  { emoji: '🥭', color: '#ff9800', juice: '#ffe082', pts: 20, r: 37 },
+  { emoji: '🍎', color: '#f44336', juice: '#ffcdd2', pts: 15, r: 35 },
+];
+
+const FN_POWERS = [
+  { emoji: '🌟', color: '#ffd700', juice: '#fffde7', pts: 25, r: 36, power: 'star',    label: '★ STAR BLAST!' },
+  { emoji: '💎', color: '#00bcd4', juice: '#e0f7fa', pts: 50, r: 34, power: 'diamond', label: '💎 +50 BONUS!' },
+  { emoji: '🔥', color: '#ff5722', juice: '#ff8a65', pts: 15, r: 36, power: 'fire',    label: '🔥 3X SCORE!' },
+  { emoji: '❄️', color: '#64b5f6', juice: '#e3f2fd', pts: 15, r: 36, power: 'ice',     label: '❄️ SLOW-MO!' },
 ];
 
 function fnResize() {
@@ -64,36 +74,38 @@ function exitFruitNinja() {
   refreshHome();
 }
 
-let fnBestCombo = 0;
-
 function fnSpawnFruit() {
-  const def = FN_FRUITS[Math.floor(Math.random() * FN_FRUITS.length)];
-  const isBomb = Math.random() < 0.12;
-  const x = def.r + Math.random() * (fnW - def.r * 2);
-  const vy = -(10 + Math.random() * 7 + fnDifficulty * 0.4);
-  const vx = (Math.random() - 0.5) * 4;
+  const isPower = Math.random() < 0.10;
+  const def = isPower
+    ? FN_POWERS[Math.floor(Math.random() * FN_POWERS.length)]
+    : FN_FRUITS[Math.floor(Math.random() * FN_FRUITS.length)];
+  const isBomb = !isPower && Math.random() < 0.08;
+  const r = isBomb ? 32 : def.r;
+  const x = r + Math.random() * (fnW - r * 2);
+  const iceSlow = fnIceTimer > 0 ? 0.4 : 1;
+  const vy = (1.8 + Math.random() * 1.6 + fnDifficulty * 0.07) * iceSlow;
+  const vx = (Math.random() - 0.5) * 1.2;
   fnFruits.push({
-    x, y: fnH + def.r,
+    x, y: -r,
     vx, vy,
-    r: isBomb ? 22 : def.r,
+    r,
     emoji: isBomb ? '💣' : def.emoji,
-    color: isBomb ? '#2e7d32' : def.color,
-    juice: isBomb ? '#4caf50' : def.juice,
+    color: isBomb ? '#1b5e20' : def.color,
+    juice: isBomb ? '#43a047' : (def.juice || def.color),
     pts: isBomb ? 0 : def.pts,
     isBomb,
+    isPower: !isBomb && isPower,
+    power: isPower ? def.power : null,
+    powerLabel: isPower ? def.label : null,
     sliced: false,
-    sliceAngle: 0,
     sliceTimer: 0,
-    halfA: null, halfB: null,
-    spin: (Math.random() - 0.5) * 0.08,
+    spin: (Math.random() - 0.5) * 0.025,
     angle: 0,
-    bobPhase: Math.random() * 6.28
   });
 }
 
 function fnSliceFruit(fruit, sx, sy, ex, ey) {
-  if (fruit.sliced || fruit.isBomb === undefined) return;
-  // distance from fruit center to slice line segment
+  if (fruit.sliced) return;
   const dx = ex - sx, dy = ey - sy;
   const len2 = dx * dx + dy * dy;
   if (len2 === 0) return;
@@ -104,25 +116,68 @@ function fnSliceFruit(fruit, sx, sy, ex, ey) {
   if (dist < fruit.r * 1.1) {
     fruit.sliced = true;
     if (fruit.isBomb) {
-      fnLives--;
-      document.getElementById('fnLives').textContent = '❤️'.repeat(Math.max(0, fnLives));
+      fnScore = Math.max(0, fnScore - 30);
+      document.getElementById('fnScore').textContent = fnScore;
       fnCombo = 0;
-      fnSpawnParticles(fruit.x, fruit.y, '#4caf50', 20);
-      fnAddFloat('💥 BOOM!', '#43a047', fruit.x, fruit.y);
-      if (fnLives <= 0) { setTimeout(() => fnEndGame(), 400); }
+      fnSpawnParticles(fruit.x, fruit.y, '#ef9a9a', 22);
+      fnAddFloat('💥 -30!', '#ff5252', fruit.x, fruit.y);
+    } else if (fruit.isPower) {
+      fnApplyPower(fruit);
     } else {
       fnCombo++;
       if (fnCombo > fnBestCombo) fnBestCombo = fnCombo;
       fnComboTimer = 90;
+      const multiplier = fnFireTimer > 0 ? 3 : 1;
       const bonus = fnCombo >= 3 ? fnCombo : 1;
-      const earned = fruit.pts * bonus;
+      const earned = fruit.pts * bonus * multiplier;
       fnScore += earned;
       document.getElementById('fnScore').textContent = fnScore;
       fnSpawnParticles(fruit.x, fruit.y, fruit.juice, 12);
-      const txt = fnCombo >= 3 ? fnCombo + 'x COMBO! +' + earned : '+' + earned;
+      let txt = '+' + earned;
+      if (multiplier === 3) txt = '🔥' + txt;
+      if (fnCombo >= 3) txt = fnCombo + 'x COMBO! ' + txt;
       fnAddFloat(txt, fnCombo >= 3 ? '#ffd700' : '#fff', fruit.x, fruit.y - fruit.r);
     }
   }
+}
+
+function fnApplyPower(fruit) {
+  fnSpawnParticles(fruit.x, fruit.y, fruit.juice, 24);
+  fnAddFloat(fruit.powerLabel, '#ffd700', fruit.x, fruit.y - fruit.r);
+  switch (fruit.power) {
+    case 'star':
+      // Auto-slice all non-bomb fruits on screen
+      fnFruits.forEach(f => {
+        if (!f.sliced && !f.isBomb && !f.isPower) {
+          f.sliced = true;
+          const multiplier = fnFireTimer > 0 ? 3 : 1;
+          fnScore += f.pts * multiplier;
+          fnSpawnParticles(f.x, f.y, f.juice, 6);
+        }
+      });
+      document.getElementById('fnScore').textContent = fnScore;
+      break;
+    case 'diamond':
+      fnScore += 50;
+      document.getElementById('fnScore').textContent = fnScore;
+      break;
+    case 'fire':
+      fnFireTimer = 60 * 8; // 8 seconds
+      break;
+    case 'ice':
+      fnIceTimer = 60 * 6; // 6 seconds
+      // Slow down all existing fruits
+      fnFruits.forEach(f => { if (!f.sliced) { f.vx *= 0.4; f.vy *= 0.4; } });
+      break;
+  }
+  fnUpdatePowerHud();
+}
+
+function fnUpdatePowerHud() {
+  const el = document.getElementById('fnLives');
+  if (fnFireTimer > 0) { el.textContent = '🔥 3X'; el.style.color = '#ff7043'; }
+  else if (fnIceTimer > 0) { el.textContent = '❄️ SLOW'; el.style.color = '#64b5f6'; }
+  else { el.textContent = ''; el.style.color = '#fff'; }
 }
 
 function fnSpawnParticles(x, y, color, count) {
@@ -134,57 +189,54 @@ function fnSpawnParticles(x, y, color, count) {
 }
 
 function fnAddFloat(text, color, x, y) {
-  fnFloats.push({ text, color, x, y, life: 60 });
+  fnFloats.push({ text, color, x, y, life: 70 });
 }
 
-function fnUpdate() {
+function fnUpdate(dt) {
   if (fnState !== 'playing') return;
   fnFrame++;
 
-  // spawn
-  fnSpawnTimer++;
+  // Power-up timers
+  if (fnFireTimer > 0) { fnFireTimer -= dt; if (fnFireTimer <= 0) { fnFireTimer = 0; fnUpdatePowerHud(); } }
+  if (fnIceTimer > 0) { fnIceTimer -= dt; if (fnIceTimer <= 0) { fnIceTimer = 0; fnUpdatePowerHud(); } }
+
+  // Spawn
+  fnSpawnTimer += dt;
   if (fnSpawnTimer >= fnSpawnInterval) {
     fnSpawnTimer = 0;
-    const count = 1 + Math.floor(Math.random() * 2);
+    const count = 1 + Math.floor(Math.random() * (fnDifficulty > 5 ? 3 : 2));
     for (let i = 0; i < count; i++) fnSpawnFruit();
   }
 
-  // difficulty
-  fnDifficulty = Math.floor(fnScore / 100);
-  fnSpawnInterval = Math.max(25, 55 - fnDifficulty * 3);
+  fnDifficulty = Math.floor(fnScore / 200);
+  fnSpawnInterval = Math.max(40, 90 - fnDifficulty * 4);
 
-  // combo decay
+  // Combo decay
   if (fnComboTimer > 0) {
-    fnComboTimer--;
-    if (fnComboTimer === 0) fnCombo = 0;
+    fnComboTimer -= dt;
+    if (fnComboTimer <= 0) fnCombo = 0;
   }
 
-  // update fruits
+  // Update fruits
+  const iceSlowFactor = fnIceTimer > 0 ? 0.45 : 1;
   for (let i = fnFruits.length - 1; i >= 0; i--) {
     const f = fnFruits[i];
     if (f.sliced) {
-      f.sliceTimer++;
+      f.sliceTimer += dt;
       if (f.sliceTimer > 40) fnFruits.splice(i, 1);
       continue;
     }
-    f.vy += 0.35; // gravity
-    f.x += f.vx;
-    f.y += f.vy;
-    f.angle += f.spin;
-    // missed — fell off bottom without bomb
+    f.vy += 0.055 * dt * iceSlowFactor;
+    f.x  += f.vx * dt * iceSlowFactor;
+    f.y  += f.vy * dt * iceSlowFactor;
+    f.angle += f.spin * dt;
+    // Fruit fell off — just remove, no penalty (never-ending)
     if (f.y > fnH + f.r * 2) {
-      if (!f.isBomb) {
-        fnLives--;
-        document.getElementById('fnLives').textContent = '❤️'.repeat(Math.max(0, fnLives));
-        fnCombo = 0;
-        fnAddFloat('MISS!', '#ff6666', f.x, fnH - 60);
-        if (fnLives <= 0) setTimeout(() => fnEndGame(), 400);
-      }
       fnFruits.splice(i, 1);
     }
   }
 
-  // slice detection against trail
+  // Slice detection against trail
   if (fnSliceTrail.length >= 2) {
     const now = Date.now();
     const recent = fnSliceTrail.filter(p => now - p.t < 80);
@@ -196,20 +248,18 @@ function fnUpdate() {
       }
     }
   }
-
-  // clean old trail
   const now2 = Date.now();
   fnSliceTrail = fnSliceTrail.filter(p => now2 - p.t < 150);
 
-  // particles
+  // Particles
   for (let i = fnParticles.length - 1; i >= 0; i--) {
     const p = fnParticles[i];
-    p.x += p.vx; p.y += p.vy; p.vy += 0.1; p.life -= 0.04;
+    p.x += p.vx * dt; p.y += p.vy * dt; p.vy += 0.1 * dt; p.life -= 0.04 * dt;
     if (p.life <= 0) fnParticles.splice(i, 1);
   }
   for (let i = fnFloats.length - 1; i >= 0; i--) {
-    fnFloats[i].life--;
-    fnFloats[i].y -= 1.2;
+    fnFloats[i].life -= dt;
+    fnFloats[i].y -= 1.2 * dt;
     if (fnFloats[i].life <= 0) fnFloats.splice(i, 1);
   }
 }
@@ -217,14 +267,26 @@ function fnUpdate() {
 function fnRender() {
   fnCtx.clearRect(0, 0, fnW, fnH);
 
-  // background
+  // Background
   const bg = fnCtx.createLinearGradient(0, 0, 0, fnH);
   bg.addColorStop(0, '#1a0a2e');
   bg.addColorStop(1, '#2d1b4e');
   fnCtx.fillStyle = bg;
   fnCtx.fillRect(0, 0, fnW, fnH);
 
-  // slice trail
+  // Fire/Ice screen tint
+  if (fnFireTimer > 0) {
+    const alpha = Math.min(0.12, fnFireTimer / 300);
+    fnCtx.fillStyle = `rgba(255,80,0,${alpha})`;
+    fnCtx.fillRect(0, 0, fnW, fnH);
+  }
+  if (fnIceTimer > 0) {
+    const alpha = Math.min(0.12, fnIceTimer / 300);
+    fnCtx.fillStyle = `rgba(100,181,246,${alpha})`;
+    fnCtx.fillRect(0, 0, fnW, fnH);
+  }
+
+  // Slice trail
   if (fnSliceTrail.length >= 2) {
     fnCtx.save();
     const now = Date.now();
@@ -232,7 +294,7 @@ function fnRender() {
       const p1 = fnSliceTrail[i - 1], p2 = fnSliceTrail[i];
       const age = now - p2.t;
       const alpha = Math.max(0, 1 - age / 150);
-      fnCtx.strokeStyle = `rgba(255,255,255,${alpha * 0.8})`;
+      fnCtx.strokeStyle = `rgba(255,255,255,${alpha * 0.85})`;
       fnCtx.lineWidth = 3 * alpha;
       fnCtx.shadowColor = `rgba(200,230,255,${alpha})`;
       fnCtx.shadowBlur = 8;
@@ -244,13 +306,12 @@ function fnRender() {
     fnCtx.restore();
   }
 
-  // fruits
+  // Fruits
   for (const f of fnFruits) {
     fnCtx.save();
     fnCtx.translate(f.x, f.y);
     fnCtx.rotate(f.angle);
     if (f.sliced) {
-      // split halves
       const prog = f.sliceTimer / 40;
       fnCtx.globalAlpha = 1 - prog;
       fnCtx.font = (f.r * 1.6) + 'px sans-serif';
@@ -258,45 +319,45 @@ function fnRender() {
       fnCtx.textBaseline = 'middle';
       // Half A
       fnCtx.save();
-      fnCtx.translate(-prog * 20, prog * 15);
+      fnCtx.translate(-prog * 22, prog * 16);
       fnCtx.rotate(-prog * 0.5);
-      fnCtx.beginPath();
-      fnCtx.arc(0, 0, f.r, 0, Math.PI * 2);
-      fnCtx.fillStyle = f.juice || f.color;
-      fnCtx.fill();
+      fnCtx.beginPath(); fnCtx.arc(0, 0, f.r, 0, Math.PI * 2);
+      fnCtx.fillStyle = f.juice || f.color; fnCtx.fill();
       fnCtx.fillText(f.emoji, 0, 0);
       fnCtx.restore();
       // Half B
       fnCtx.save();
-      fnCtx.translate(prog * 20, prog * 15);
+      fnCtx.translate(prog * 22, prog * 16);
       fnCtx.rotate(prog * 0.5);
-      fnCtx.beginPath();
-      fnCtx.arc(0, 0, f.r, 0, Math.PI * 2);
-      fnCtx.fillStyle = f.juice || f.color;
-      fnCtx.fill();
+      fnCtx.beginPath(); fnCtx.arc(0, 0, f.r, 0, Math.PI * 2);
+      fnCtx.fillStyle = f.juice || f.color; fnCtx.fill();
       fnCtx.fillText(f.emoji, 0, 0);
       fnCtx.restore();
     } else {
-      // Draw colored circle (visible even if emoji renders black on Android)
+      // Colored circle base (fixes black emojis on Android)
       fnCtx.beginPath();
       fnCtx.arc(0, 0, f.r, 0, Math.PI * 2);
       if (f.isBomb) {
-        fnCtx.fillStyle = '#2e7d32';
+        fnCtx.fillStyle = '#1b5e20';
         fnCtx.shadowColor = '#43a047';
         fnCtx.shadowBlur = 12 + Math.sin(fnFrame * 0.15) * 6;
+      } else if (f.isPower) {
+        fnCtx.fillStyle = f.color;
+        fnCtx.shadowColor = f.color;
+        fnCtx.shadowBlur = 16 + Math.sin(fnFrame * 0.18) * 8;
       } else {
         fnCtx.fillStyle = f.color;
         fnCtx.shadowColor = f.juice;
-        fnCtx.shadowBlur = 8;
+        fnCtx.shadowBlur = 6;
       }
       fnCtx.fill();
-      // Inner highlight
+      // Highlight
       fnCtx.beginPath();
-      fnCtx.arc(-f.r * 0.2, -f.r * 0.25, f.r * 0.45, 0, Math.PI * 2);
+      fnCtx.arc(-f.r * 0.22, -f.r * 0.26, f.r * 0.42, 0, Math.PI * 2);
       fnCtx.fillStyle = 'rgba(255,255,255,0.22)';
       fnCtx.shadowBlur = 0;
       fnCtx.fill();
-      // Emoji on top
+      // Emoji
       fnCtx.font = (f.r * 1.6) + 'px sans-serif';
       fnCtx.textAlign = 'center';
       fnCtx.textBaseline = 'middle';
@@ -305,7 +366,7 @@ function fnRender() {
     fnCtx.restore();
   }
 
-  // particles
+  // Particles
   fnCtx.save();
   for (const p of fnParticles) {
     fnCtx.globalAlpha = p.life;
@@ -316,18 +377,18 @@ function fnRender() {
   }
   fnCtx.restore();
 
-  // floats
+  // Floats
   fnCtx.save();
   for (const f of fnFloats) {
     fnCtx.globalAlpha = Math.min(1, f.life / 20);
     fnCtx.fillStyle = f.color;
-    fnCtx.font = 'bold 16px sans-serif';
+    fnCtx.font = 'bold 17px sans-serif';
     fnCtx.textAlign = 'center';
     fnCtx.fillText(f.text, f.x, f.y);
   }
   fnCtx.restore();
 
-  // combo display
+  // Combo display
   if (fnCombo >= 2) {
     fnCtx.save();
     fnCtx.globalAlpha = 0.7 + Math.sin(fnFrame * 0.2) * 0.3;
@@ -336,37 +397,33 @@ function fnRender() {
     fnCtx.fillStyle = '#ffd700';
     fnCtx.shadowColor = '#ffd700';
     fnCtx.shadowBlur = 10;
-    fnCtx.fillText(fnCombo + 'x COMBO!', fnW / 2, 50);
+    fnCtx.fillText(fnCombo + 'x COMBO!', fnW / 2, 54);
     fnCtx.restore();
   }
 }
 
-function fnLoop() {
+function fnLoop(ts = 0) {
   if (fnState !== 'playing') { if (fnRaf) cancelAnimationFrame(fnRaf); fnRaf = null; return; }
-  fnUpdate();
+  const dt = fnLastTs ? Math.min((ts - fnLastTs) / 16.667, 3) : 1;
+  fnLastTs = ts;
+  fnUpdate(dt);
   fnRender();
   fnRaf = requestAnimationFrame(fnLoop);
 }
 
 function fnStartGame() {
   fnState = 'playing';
-  fnScore = 0; fnLives = 3; fnCombo = 0; fnComboTimer = 0;
+  fnScore = 0; fnCombo = 0; fnComboTimer = 0; fnBestCombo = 0;
+  fnFireTimer = 0; fnIceTimer = 0;
   fnFruits = []; fnParticles = []; fnFloats = []; fnSliceTrail = [];
-  fnSpawnTimer = 0; fnSpawnInterval = 55; fnDifficulty = 0; fnFrame = 0;
-  fnBestCombo = 0;
+  fnSpawnTimer = 0; fnSpawnInterval = 90; fnDifficulty = 0; fnFrame = 0;
+  fnLastTs = 0;
   document.getElementById('fnScore').textContent = '0';
-  document.getElementById('fnLives').textContent = '❤️❤️❤️';
+  document.getElementById('fnLives').textContent = '';
+  document.getElementById('fnLives').style.color = '#fff';
   document.getElementById('fnOverlay').style.display = 'none';
   fnResize();
   fnRaf = requestAnimationFrame(fnLoop);
-}
-
-function fnEndGame() {
-  fnState = 'ended';
-  if (fnRaf) cancelAnimationFrame(fnRaf);
-  fnRaf = null;
-  recordGameEnd(fnScore, fnBestCombo);
-  setTimeout(() => showFnOverlay(true), 300);
 }
 
 // ── Input ──
@@ -391,7 +448,7 @@ function fnEndGame() {
 
   window.addEventListener('resize', () => { if (currentPage === 'fruitninja') fnResize(); });
 
-  // idle frame
+  // Idle frame
   fnResize();
   fnCtx.fillStyle = '#1a0a2e';
   fnCtx.fillRect(0, 0, fnW, fnH);

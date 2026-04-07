@@ -172,7 +172,8 @@ function gameRender(){
   pillars.forEach(drawPillar);enemies.forEach(e=>ENEMY_TYPES[e.type].draw(e));drawFish(fishY);drawParticles();drawBoostBar();
 }
 
-function gameLoop(){if(gameState!=='playing')return;gameUpdate();gameRender();gameRaf=requestAnimationFrame(gameLoop);}
+let _fdLastTs=0;
+function gameLoop(ts=0){if(gameState!=='playing')return;if(_fdLastTs&&ts-_fdLastTs<14){gameRaf=requestAnimationFrame(gameLoop);return;}_fdLastTs=ts;gameUpdate();gameRender();gameRaf=requestAnimationFrame(gameLoop);}
 
 function gameDie(msg){
   burst(FISH_X,fishY);showKillMsg(msg);gameState='dead';cancelAnimationFrame(gameRaf);gameRender();

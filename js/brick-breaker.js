@@ -439,8 +439,11 @@ function bbRender() {
   bbCtx.restore();
 }
 
-function bbLoop() {
+let _bbLastTs = 0;
+function bbLoop(ts = 0) {
   if (bbState !== 'playing') { if (bbRaf) cancelAnimationFrame(bbRaf); bbRaf = null; return; }
+  if (_bbLastTs && ts - _bbLastTs < 14) { bbRaf = requestAnimationFrame(bbLoop); return; }
+  _bbLastTs = ts;
   bbUpdate();
   bbRender();
   bbRaf = requestAnimationFrame(bbLoop);

@@ -375,12 +375,15 @@ function bRender(){
   }
 }
 
-function bLoop(){
+let _bLastTs=0;
+function bLoop(ts=0){
   if(bState!=='playing'){
     if(bRaf) cancelAnimationFrame(bRaf);
     bRaf=null;
     return;
   }
+  if(_bLastTs&&ts-_bLastTs<14){bRaf=requestAnimationFrame(bLoop);return;}
+  _bLastTs=ts;
   bUpdate();
   bRender();
   bRaf=requestAnimationFrame(bLoop);

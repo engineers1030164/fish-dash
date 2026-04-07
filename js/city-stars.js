@@ -871,8 +871,11 @@ function exitCityGame(){
   currentPage='home';refreshHome();
 }
 
-function cityLoop(){
+let _cityLastTs=0;
+function cityLoop(ts=0){
   if(cityState!=='playing'){if(cityRaf)cancelAnimationFrame(cityRaf);cityRaf=null;return;}
+  if(_cityLastTs&&ts-_cityLastTs<14){cityRaf=requestAnimationFrame(cityLoop);return;}
+  _cityLastTs=ts;
   cityUpdate();cityRender();
   cityRaf=requestAnimationFrame(cityLoop);
 }
