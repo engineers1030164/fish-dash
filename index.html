@@ -179,6 +179,34 @@ body{background:#0a0e1a;height:100dvh;height:100vh;overflow:hidden;font-family:'
 .vupg-maxed{color:#00e5ff;font-size:11px;font-weight:bold;white-space:nowrap;}
 #vendorUpgradeClose{padding:6px;background:rgba(255,255,255,0.08);border:none;border-radius:8px;color:#fff;cursor:pointer;font-size:13px;align-self:flex-end;}
 
+/* ── URBAN HUNT GAME ── */
+#page-hunter{padding:0;overflow:hidden;display:none;flex-direction:column;}
+#page-hunter.active{display:flex;}
+#uhContainer{flex:1;position:relative;overflow:hidden;background:#0a0a12;touch-action:none;}
+#uhCanvas{display:block;width:100%;height:100%;}
+#uhOverlay{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;background:rgba(0,0,10,0.92);color:#fff;gap:10px;padding:24px;z-index:10;}
+#uhOverlay h2{font-size:24px;font-weight:bold;text-align:center;}
+#uhOverlay .uh-sub{font-size:13px;color:#90caf9;text-align:center;max-width:280px;}
+.uh-tips{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin:4px 0;}
+.uh-tip{font-size:11px;background:rgba(255,255,255,0.08);border-radius:10px;padding:4px 12px;color:#ffe;}
+#uhPlayBtn{padding:13px 38px;font-size:17px;font-weight:bold;background:linear-gradient(135deg,#d32f2f,#b71c1c);border:none;border-radius:28px;color:#fff;cursor:pointer;box-shadow:0 4px 20px rgba(211,47,47,0.5);}
+#uhUpgPanel{position:absolute;inset:0;display:none;flex-direction:column;align-items:center;justify-content:flex-start;background:rgba(0,0,10,0.95);padding:20px 16px;z-index:10;overflow-y:auto;gap:8px;}
+#uhUpgPanel h3{color:#ffd700;font-size:18px;font-weight:bold;margin:4px 0;}
+#uhUpgPanel .uh-pts-display{font-size:14px;color:#80ff80;font-weight:bold;margin-bottom:4px;}
+.uh-upg-row{display:flex;align-items:center;gap:10px;background:rgba(255,255,255,0.05);border-radius:12px;padding:10px 14px;width:100%;max-width:360px;box-sizing:border-box;}
+.uh-upg-info{flex:1;}
+.uh-upg-name{font-size:13px;color:#fff;font-weight:700;}
+.uh-upg-desc{font-size:11px;color:#90a4ae;margin-top:2px;}
+.uh-upg-lv{font-size:11px;color:#ffd700;margin-top:3px;}
+.uh-upg-btn{padding:10px 16px;background:linear-gradient(135deg,#ffd700,#f57c00);border:none;border-radius:10px;color:#111;font-weight:bold;font-size:13px;cursor:pointer;min-width:70px;min-height:44px;}
+.uh-upg-btn:disabled{opacity:0.35;cursor:default;}
+.uh-upg-max{color:#00e5ff;font-size:11px;font-weight:bold;}
+#uhNextBtn{padding:14px 32px;font-size:16px;font-weight:bold;background:linear-gradient(135deg,#1565c0,#0d47a1);border:none;border-radius:24px;color:#fff;cursor:pointer;margin-top:8px;min-height:52px;}
+#uhShootBtn{position:absolute;bottom:18px;right:16px;width:74px;height:74px;border-radius:50%;background:rgba(211,47,47,0.88);border:3px solid rgba(255,100,100,0.8);color:#fff;font-size:26px;cursor:pointer;-webkit-tap-highlight-color:transparent;touch-action:none;z-index:5;display:none;}
+#uhScopeBtn{position:absolute;bottom:104px;right:24px;width:56px;height:56px;border-radius:50%;background:rgba(20,20,40,0.88);border:2px solid rgba(255,255,255,0.3);color:#fff;font-size:20px;cursor:pointer;-webkit-tap-highlight-color:transparent;touch-action:none;z-index:5;display:none;}
+#uhWeaponBtn{position:absolute;bottom:26px;right:108px;padding:14px 18px;border-radius:28px;background:rgba(20,20,40,0.88);border:2px solid rgba(255,255,255,0.25);color:#fff;font-size:13px;font-weight:bold;cursor:pointer;-webkit-tap-highlight-color:transparent;touch-action:none;z-index:5;display:none;min-height:48px;}
+#uhUpgBtn{position:absolute;top:56px;left:10px;padding:8px 14px;border-radius:20px;background:rgba(255,215,0,0.9);border:none;color:#111;font-size:12px;font-weight:bold;cursor:pointer;display:none;z-index:5;}
+
 /* ── BUBBLE STACK GAME ── */
 #page-bubble{padding:0;overflow:hidden;display:none;flex-direction:column;}
 #page-bubble.active{display:flex;}
@@ -275,6 +303,7 @@ body{background:#0a0e1a;height:100dvh;height:100vh;overflow:hidden;font-family:'
       <div class="game-card playable" onclick="launchGame('bubble-stack')"><div class="gc-emoji">🔮</div><div class="gc-name">Bubble Stack</div><div class="gc-status" style="color:#c471ed;">Play</div></div>
       <div class="game-card playable" onclick="launchGame('fruit-ninja')"><div class="gc-emoji">🍉</div><div class="gc-name">Fruit Ninja</div><div class="gc-status" style="color:#ff7043;">Play</div></div>
       <div class="game-card playable" onclick="launchGame('brick-breaker')"><div class="gc-emoji">🧱</div><div class="gc-name">Brick Breaker</div><div class="gc-status" style="color:#00b4d8;">Play</div></div>
+      <div class="game-card playable" onclick="launchGame('urban-hunt')"><div class="gc-emoji">🔫</div><div class="gc-name">Urban Hunt</div><div class="gc-status" style="color:#ff5252;">Play</div></div>
     </div>
   </div>
 
@@ -534,6 +563,39 @@ body{background:#0a0e1a;height:100dvh;height:100vh;overflow:hidden;font-family:'
     </div>
   </div>
 
+  <!-- ══════ URBAN HUNT GAME ══════ -->
+  <div id="page-hunter" class="page">
+    <div class="game-topbar">
+      <button class="back-btn" onclick="exitUrbanHunt()">←</button>
+      <span class="game-title">🔫 Urban Hunt</span>
+      <button class="fullscreen-btn" onclick="toggleFullscreen()">⛶</button>
+    </div>
+    <div id="uhContainer">
+      <canvas id="uhCanvas"></canvas>
+      <div id="uhOverlay">
+        <h2>🔫 Urban Hunt</h2>
+        <div class="uh-sub">Infiltrate the AI city. Eliminate all enemies.</div>
+        <div class="uh-tips">
+          <span class="uh-tip">🕹️ Left side — move joystick</span>
+          <span class="uh-tip">👆 Right side — aim & shoot</span>
+          <span class="uh-tip">🔫 Bottom buttons — weapon & scope</span>
+          <span class="uh-tip">💀 Kill enemies to earn upgrade points</span>
+        </div>
+        <div id="uhResult"></div>
+        <button id="uhPlayBtn">▶ Start Mission</button>
+      </div>
+      <div id="uhUpgPanel" style="display:none;">
+        <h3>⬆ Upgrade Weapons</h3>
+        <div id="uhUpgContent"></div>
+        <button id="uhNextBtn">▶ Next Wave</button>
+      </div>
+      <button id="uhShootBtn">🔫</button>
+      <button id="uhScopeBtn">🔭</button>
+      <button id="uhWeaponBtn">Pistol</button>
+      <button id="uhUpgBtn" onclick="uhOpenUpgrades()">⬆ 0 pts</button>
+    </div>
+  </div>
+
   <!-- ══════ BOTTOM NAV ══════ -->
   <div id="bottomNav">
     <div class="nav-item active" onclick="navigate('home')"><div class="nav-icon">🏠</div>Home</div>
@@ -550,5 +612,6 @@ body{background:#0a0e1a;height:100dvh;height:100vh;overflow:hidden;font-family:'
 <script src="js/bubble-stack.js"></script>
 <script src="js/fruit-ninja.js"></script>
 <script src="js/brick-breaker.js"></script>
+<script src="js/urban-hunt.js"></script>
 </body>
 </html>

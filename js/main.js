@@ -45,6 +45,10 @@ function launchGame(id){
     document.getElementById('page-brickbreaker').classList.add('active');
     currentPage='brickbreaker';
     showBbOverlay(false);
+  } else if(id==='urban-hunt'){
+    document.getElementById('page-hunter').classList.add('active');
+    currentPage='hunter';
+    showUhOverlay(true);
   }
 }
 
@@ -237,7 +241,7 @@ function toggleFullscreen(){
 }
 
 // Prevent mobile scroll
-document.addEventListener('touchmove',e=>{if(currentPage==='game'||currentPage==='city'||currentPage==='vendor'||currentPage==='bubble'||currentPage==='fruitninja'||currentPage==='brickbreaker')e.preventDefault();},{passive:false});
+document.addEventListener('touchmove',e=>{if(currentPage==='game'||currentPage==='city'||currentPage==='vendor'||currentPage==='bubble'||currentPage==='fruitninja'||currentPage==='brickbreaker'||currentPage==='hunter')e.preventDefault();},{passive:false});
 
 // Handle rotation / resize
 window.addEventListener('resize',()=>{
@@ -247,7 +251,7 @@ window.addEventListener('resize',()=>{
 window.dispatchEvent(new Event('resize'));
 
 // Auto fullscreen on landscape rotation (game pages)
-const rGamePages=['game','city','vendor','bubble','fruitninja','brickbreaker'];
+const rGamePages=['game','city','vendor','bubble','fruitninja','brickbreaker','hunter'];
 function tryFullscreen(){
   const el=document.documentElement;
   if(document.fullscreenElement||document.webkitFullscreenElement)return;
