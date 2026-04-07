@@ -253,28 +253,53 @@ function fnRender() {
       // split halves
       const prog = f.sliceTimer / 40;
       fnCtx.globalAlpha = 1 - prog;
-      fnCtx.font = (f.r * 2) + 'px sans-serif';
+      fnCtx.font = (f.r * 1.6) + 'px sans-serif';
       fnCtx.textAlign = 'center';
       fnCtx.textBaseline = 'middle';
+      // Half A
       fnCtx.save();
       fnCtx.translate(-prog * 20, prog * 15);
       fnCtx.rotate(-prog * 0.5);
+      fnCtx.beginPath();
+      fnCtx.arc(0, 0, f.r, 0, Math.PI * 2);
+      fnCtx.fillStyle = f.juice || f.color;
+      fnCtx.fill();
       fnCtx.fillText(f.emoji, 0, 0);
       fnCtx.restore();
+      // Half B
       fnCtx.save();
       fnCtx.translate(prog * 20, prog * 15);
       fnCtx.rotate(prog * 0.5);
+      fnCtx.beginPath();
+      fnCtx.arc(0, 0, f.r, 0, Math.PI * 2);
+      fnCtx.fillStyle = f.juice || f.color;
+      fnCtx.fill();
       fnCtx.fillText(f.emoji, 0, 0);
       fnCtx.restore();
     } else {
-      fnCtx.font = (f.r * 2) + 'px sans-serif';
-      fnCtx.textAlign = 'center';
-      fnCtx.textBaseline = 'middle';
-      // glow for bombs
+      // Draw colored circle (visible even if emoji renders black on Android)
+      fnCtx.beginPath();
+      fnCtx.arc(0, 0, f.r, 0, Math.PI * 2);
       if (f.isBomb) {
+        fnCtx.fillStyle = '#2e7d32';
         fnCtx.shadowColor = '#43a047';
         fnCtx.shadowBlur = 12 + Math.sin(fnFrame * 0.15) * 6;
+      } else {
+        fnCtx.fillStyle = f.color;
+        fnCtx.shadowColor = f.juice;
+        fnCtx.shadowBlur = 8;
       }
+      fnCtx.fill();
+      // Inner highlight
+      fnCtx.beginPath();
+      fnCtx.arc(-f.r * 0.2, -f.r * 0.25, f.r * 0.45, 0, Math.PI * 2);
+      fnCtx.fillStyle = 'rgba(255,255,255,0.22)';
+      fnCtx.shadowBlur = 0;
+      fnCtx.fill();
+      // Emoji on top
+      fnCtx.font = (f.r * 1.6) + 'px sans-serif';
+      fnCtx.textAlign = 'center';
+      fnCtx.textBaseline = 'middle';
       fnCtx.fillText(f.emoji, 0, 0);
     }
     fnCtx.restore();
